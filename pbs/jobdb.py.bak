@@ -120,7 +120,7 @@ def job_status_type_dict():
        It is used to create the JobDB SQL table.
     """
     status = job_status_dict()
-    for k in list(status.keys()):
+    for k in status.keys():
         status[k] = "text"
     status["auto"] = "integer"
 
@@ -142,7 +142,7 @@ def sql_create_str():
     """Returns a string for SQL CREATE TABLE"""
     status_type = job_status_type_dict()
     s = "("    #pylint: disable=invalid-name
-    for k in list(status_type.keys()):
+    for k in status_type.keys():
         s += k + " " + status_type[k] + ", "  #pylint: disable=invalid-name
     return s[:-2] + ")"
 
@@ -153,7 +153,7 @@ def sql_insert_str(job_status):
     colstr = "("
     questionstr = "("
     val = []
-    for k in list(job_status.keys()):
+    for k in job_status.keys():
         colstr = colstr + k + ", "
         questionstr = questionstr + "?, "
         val.append(job_status[k])
@@ -252,20 +252,20 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
             if "PBS_JOB_DB" in os.environ:
                 dbpath = os.environ("PBS_JOB_DB")
                 if not os.path.isdir(dbpath):
-                    print("Error in pbs.jobdb.JobDB.connect().")
-                    print("  PBS_JOB_DB:", dbpath)
-                    print("  Does not exist")
+                    print "Error in pbs.jobdb.JobDB.connect()."
+                    print "  PBS_JOB_DB:", dbpath
+                    print "  Does not exist"
                     sys.exit()
             else:
                 dbpath = os.path.join(os.environ["HOME"], ".pbs")
                 if not os.path.isdir(dbpath):
-                    print("Creating directory:", dbpath)
+                    print "Creating directory:", dbpath
                     os.mkdir(dbpath)
             dbpath = os.path.join(dbpath, "jobs.db")
         else:
             if not os.path.isfile(dbpath):
-                print(("Error in pbs.jobdb.JobDB.connect(). argument dbpath =",
-                       dbpath, "is not a file."))
+                print ("Error in pbs.jobdb.JobDB.connect(). argument dbpath =",
+                       dbpath, "is not a file.")
                 sys.exit()
 
 
@@ -273,25 +273,25 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
             if "PBS_JOB_DB" in os.environ:
                 configpath = os.environ("PBS_JOB_DB")
                 if not os.path.isdir(configpath):
-                    print("Error in pbs.jobdb.JobDB.connect().")
-                    print("  PBS_JOB_DB:", configpath)
-                    print("  Does not exist")
+                    print "Error in pbs.jobdb.JobDB.connect()."
+                    print "  PBS_JOB_DB:", configpath
+                    print "  Does not exist"
                     sys.exit()
             else:
                 configpath = os.path.join(os.environ["HOME"], ".pbs")
                 if not os.path.isdir(configpath):
-                    print("Creating directory:", configpath)
+                    print "Creating directory:", configpath
                     os.mkdir(configpath)
             configpath = os.path.join(configpath, "config.json")
         else:
             if not os.path.isfile(configpath):
-                print(("Error in pbs.jobdb.JobDB.connect(). argument configpath =",
-                       configpath, "is not a file."))
+                print ("Error in pbs.jobdb.JobDB.connect(). argument configpath =",
+                       configpath, "is not a file.")
                 sys.exit()
 
 
         if not os.path.isfile(configpath):
-            print("Writing Config:", configpath)
+            print "Writing Config:", configpath
             self.config = {"software" : misc.getsoftware(), "version" : misc.getversion()}
             with open(configpath, "w") as my_json:
                 json.dump(self.config, my_json, indent=0)
@@ -300,7 +300,7 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
                 self.config = json.load(my_json)
 
         if not os.path.isfile(dbpath):
-            print("Creating Database:", dbpath)
+            print "Creating Database:", dbpath
             self.conn = sqlite3.connect(dbpath)
             self.conn.row_factory = sqlite3.Row
             self.conn.create_function("REGEXP", 2, regexp)
@@ -371,7 +371,7 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
         self.untracked = []
 
         # collect job status
-        for k in list(active_status.keys()):
+        for k in active_status.keys():
             if k in newstatus:
                 newstatus[k] = active_status[k]
             else:
@@ -380,7 +380,7 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
                     self.untracked.append(active_status[k])
 
         # update database with latest job status
-        for key, jobstatus in newstatus.items():
+        for key, jobstatus in newstatus.iteritems():
             if jobstatus == "C":
                 self.curs.execute(
                     "UPDATE jobs SET jobstatus=?, elapsedtime=?, modifytime=? WHERE jobid=?",
@@ -411,8 +411,8 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
 
     def select_job(self, jobid):
         """Return record (sqlite3.Row object) for one job with given jobid."""
-        if not isinstance(jobid, str) and not isinstance(jobid, str):
-            print("Error in pbs.JobDB.select_job(). type(id):", type(jobid), "expected str.")
+        if not isinstance(jobid, str) and not isinstance(jobid, unicode):
+            print "Error in pbs.JobDB.select_job(). type(id):", type(jobid), "expected str."
             sys.exit()
 
         self.curs.execute("SELECT * FROM jobs WHERE jobid=?", (jobid,))
@@ -447,8 +447,8 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
 
            The parent is the job with continuation_jobid = given jobid
         """
-        if not isinstance(jobid, str) and not isinstance(jobid, str):
-            print("Error in pbs.JobDB.select_parent(). type(id):", type(jobid), "expected str.")
+        if not isinstance(jobid, str) and not isinstance(jobid, unicode):
+            print "Error in pbs.JobDB.select_parent(). type(id):", type(jobid), "expected str."
             sys.exit()
 
         self.curs.execute("SELECT * FROM jobs WHERE continuation_jobid=?", (jobid,))
@@ -456,10 +456,10 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
         if len(r) == 0:
             return None
         elif len(r) > 1:
-            print(("Error in pbs.JobDB.select_parent().",
+            print ("Error in pbs.JobDB.select_parent().",
                    len(r),
                    " records with continuation_jobid:",
-                   jobid, " found."))
+                   jobid, " found.")
             sys.exit()
         return r[0]
 
@@ -477,14 +477,14 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
         self.curs.execute("SELECT * FROM jobs WHERE jobid=?", (r["continuation_jobid"],))
         r = self.curs.fetchall()    #pylint: disable=invalid-name
         if len(r) == 0:
-            print(("Error in pbs.JobDB.select_child(). jobid:",
+            print ("Error in pbs.JobDB.select_child(). jobid:",
                    jobid, " child:", r["continuation_jobid"],
-                   "not found."))
+                   "not found.")
             sys.exit()
         elif len(r) > 1:
-            print(("Error in pbs.JobDB.select_child().",
+            print ("Error in pbs.JobDB.select_child().",
                    len(r), " records with child jobid:",
-                   r["continuation_jobid"], " found."))
+                   r["continuation_jobid"], " found.")
             sys.exit()
         return r[0]
 
@@ -902,12 +902,12 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
 
     def print_header(self): #pylint: disable=no-self-use
         """Print header rows for record summary"""
-        print(("{0:<12} {1:<24} {2:^5} {3:^5} {4:>12} {5:^1} {6:>12} {7:<24} {8:^1} {9:<12}"
+        print ("{0:<12} {1:<24} {2:^5} {3:^5} {4:>12} {5:^1} {6:>12} {7:<24} {8:^1} {9:<12}"
                .format("JobID", "JobName", "Nodes", "Procs", "Walltime", "S", "Runtime",
-                       "Task", "A", "ContJobID")))
-        print(("{0:-^12} {1:-^24} {2:-^5} {3:-^5} {4:->12} {5:-^1} {6:->12}\
+                       "Task", "A", "ContJobID"))
+        print ("{0:-^12} {1:-^24} {2:-^5} {3:-^5} {4:->12} {5:-^1} {6:->12}\
                 {7:-<24} {8:-^1} {9:-^12}"
-               .format("-", "-", "-", "-", "-", "-", "-", "-", "-", "-")))
+               .format("-", "-", "-", "-", "-", "-", "-", "-", "-", "-"))
 
 
     def print_record(self, r):  #pylint: disable=invalid-name, no-self-use
@@ -926,10 +926,10 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
             elif isinstance(d[k], int):
                 d[k] = misc.strftimedelta(d[k])
 
-        print(("{0:<12} {1:<24} {2:^5} {3:^5} {4:>12} {5:^1} {6:>12} {7:<24} {8:^1} {9:<12}"
+        print ("{0:<12} {1:<24} {2:^5} {3:^5} {4:>12} {5:^1} {6:>12} {7:<24} {8:^1} {9:<12}"
                .format(d["jobid"], d["jobname"], d["nodes"], d["procs"], d["walltime"],
                        d["jobstatus"], d["elapsedtime"], d["taskstatus"], d["auto"],
-                       d["continuation_jobid"])))
+                       d["continuation_jobid"]))
 
 
     def print_full_record(self, r): #pylint: disable=invalid-name, no-self-use
@@ -937,16 +937,16 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
 
             r: a dict-like object
         """
-        print("#Record:")
-        for key in list(r.keys()):
-            if isinstance(r[key], str):
+        print "#Record:"
+        for key in r.keys():
+            if isinstance(r[key], (str, unicode)):
                 s = "\"" + r[key] + "\""    #pylint: disable=invalid-name
                 if re.search("\n", s):
                     s = "\"\"" + s + "\"\"" #pylint: disable=invalid-name
-                print(key, "=", s)
+                print key, "=", s
             else:
-                print(key, "=", r[key])
-        print("")
+                print key, "=", r[key]
+        print ""
 
 
     def print_job(self, jobid=None, job=None, full=False, series=False):
@@ -966,7 +966,7 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
             else:
                 for r in series:    #pylint: disable=invalid-name
                     self.print_record(r)
-            print("")
+            print ""
         else:
             if job is None:
                 job = self.select_job(jobid)
@@ -1016,7 +1016,7 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
              full: If True, print as key:val pair list, If (default) False,
                 print single row summary in 'qstat' style.
         """
-        print("\n\nUntracked:")
+        print "\n\nUntracked:"
         if not full:
             self.print_header()
         sort = sorted(self.untracked, key=lambda rec: rec["jobid"])
@@ -1040,7 +1040,7 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
              series: If True, print records as groups of auto submitting job
                 series. If (default) False, print in order found.
         """
-        print("\n\nTracked:")
+        print "\n\nTracked:"
         self.curs.execute("SELECT * FROM jobs")
         if not full:
             self.print_header()
@@ -1058,7 +1058,7 @@ class JobDB(object):    #pylint: disable=too-many-instance-attributes, too-many-
              series: If True, print records as groups of auto submitting job
                 series. If (default) False, print in order found.
         """
-        print("\n\nTracked:")
+        print "\n\nTracked:"
         self.curs.execute("SELECT * FROM jobs WHERE taskstatus!='Complete'\
                            AND taskstatus!='Aborted' AND taskstatus!='Continued'")
         if not full:

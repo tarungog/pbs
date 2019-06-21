@@ -4,7 +4,7 @@
 import re
 import os
 import sys
-import io
+import StringIO
 
 ### Local ###
 import jobdb
@@ -249,7 +249,7 @@ class Job(object):  #pylint: disable=too-many-instance-attributes
            Will always include -V
 
         """
-        s = io.StringIO(qsubstr)  #pylint: disable=invalid-name
+        s = StringIO.StringIO(qsubstr)  #pylint: disable=invalid-name
 
         self.pmem = None
         self.email = None
@@ -355,7 +355,7 @@ class Job(object):  #pylint: disable=too-many-instance-attributes
                     self.auto = True
                     optional["auto"] = self.auto
                 else:
-                    print("Error in pbs.Job().read(). '#auto=' argument not understood:", line)
+                    print "Error in pbs.Job().read(). '#auto=' argument not understood:", line
                     sys.exit()
 
             m = re.search(r"cd\s+\$PBS_O_WORKDIR\s+", line)  #pylint: disable=invalid-name
@@ -367,24 +367,24 @@ class Job(object):  #pylint: disable=too-many-instance-attributes
         # end for
 
         # check for required arguments
-        for k in list(required.keys()):
+        for k in required.keys():
             if required[k] == "Not Found":
 
-                print("Error in pbs.Job.read(). Not all required arguments were found.\n")
+                print "Error in pbs.Job.read(). Not all required arguments were found.\n"
 
                 # print what we found:
-                print("Optional arguments:")
-                for k, v in optional.items():    #pylint: disable=invalid-name
-                    print(k + ":", v)
-                print("\nRequired arguments:")
-                for k, v in required.items():    #pylint: disable=invalid-name
+                print "Optional arguments:"
+                for k, v in optional.iteritems():    #pylint: disable=invalid-name
+                    print k + ":", v
+                print "\nRequired arguments:"
+                for k, v in required.iteritems():    #pylint: disable=invalid-name
                     if k == "command":
-                        print(k + ":")
-                        print("--- Begin command ---")
-                        print(v)
-                        print("--- End command ---")
+                        print k + ":"
+                        print "--- Begin command ---"
+                        print v
+                        print "--- End command ---"
                     else:
-                        print(k + ":", v)
+                        print k + ":", v
 
                 sys.exit()
         # end if

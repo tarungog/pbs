@@ -2,7 +2,7 @@
 
 import subprocess
 import os
-import io
+import StringIO
 # import re
 import datetime
 # import time
@@ -49,7 +49,7 @@ def getversion(software=None):
         # call 'qstat' using subprocess
         p = subprocess.Popen(opt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) #pylint: disable=invalid-name
         stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-        sout = io.StringIO(stdout)
+        sout = StringIO.StringIO(stdout)
 
         # return the version number
         return sout.read().rstrip("\n").lower().lstrip("version: ")
@@ -59,7 +59,7 @@ def getversion(software=None):
         # call 'squeue' using subprocess
         p = subprocess.Popen(opt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) #pylint: disable=invalid-name
         stdout, stderr = p.communicate()    #pylint: disable=unused-variable
-        sout = io.StringIO(stdout)
+        sout = StringIO.StringIO(stdout)
 
         # return the version number
         return sout.read().rstrip("\n").lstrip("slurm ")
@@ -82,7 +82,7 @@ def seconds(walltime):
                 + float(wtime[1])*60.0
                 + float(wtime[2]))
     else:
-        print(("Error in walltime format:", walltime))
+        print ("Error in walltime format:", walltime)
         sys.exit()
 
 def hours(walltime):
@@ -100,7 +100,7 @@ def hours(walltime):
                 + float(wtime[1])/60.0
                 + float(wtime[2])/3600.0)
     else:
-        print(("Error in walltime format:", walltime))
+        print ("Error in walltime format:", walltime)
         sys.exit()
 
 def strftimedelta(seconds):     #pylint: disable=redefined-outer-name

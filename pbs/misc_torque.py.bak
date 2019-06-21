@@ -2,7 +2,7 @@
 
 import subprocess
 import os
-import io
+import StringIO
 import re
 import datetime
 import time
@@ -29,7 +29,7 @@ def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
         q = subprocess.Popen(qopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
         stdout, stderr = q.communicate()    #pylint: disable=unused-variable
 
-        qsout = io.StringIO(stdout)
+        qsout = StringIO.StringIO(stdout)
 
         # Get the jobids
         jobid = []
@@ -47,12 +47,12 @@ def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
     if full:
         opt += ["-f"]
     if jobid is not None:
-        if isinstance(jobid, str) or isinstance(jobid, str):
+        if isinstance(jobid, str) or isinstance(jobid, unicode):
             jobid = [jobid]
         elif isinstance(jobid, list):
             pass
         else:
-            print(("Error in pbs.misc.qstat(). type(jobid):", type(jobid)))
+            print ("Error in pbs.misc.qstat(). type(jobid):", type(jobid))
             sys.exit()
         opt += jobid
 
@@ -61,7 +61,7 @@ def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
     p = subprocess.Popen(opt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
     stdout, stderr = p.communicate()        #pylint: disable=unused-variable
 
-    sout = io.StringIO(stdout)
+    sout = StringIO.StringIO(stdout)
 
     # strip the header lines
     if full is False:
@@ -83,7 +83,7 @@ def job_id(all=False, name=None):       #pylint: disable=redefined-builtin
     if all or name is not None:
         jobid = []
         stdout = _qstat()
-        sout = io.StringIO(stdout)
+        sout = StringIO.StringIO(stdout)
         for line in sout:
             if name is not None:
                 if line.split()[3] == name:
@@ -136,7 +136,7 @@ def job_status(jobid=None):
     status = dict()
 
     stdout = _qstat(jobid=jobid, full=True)
-    sout = io.StringIO(stdout)
+    sout = StringIO.StringIO(stdout)
 
 ### TODO: figure out why jobstatus is being initialized as a None vs as a dict() and then checked for content ### pylint: disable=fixme
     jobstatus = None
@@ -243,7 +243,7 @@ def submit(substr):
     p = subprocess.Popen(   #pylint: disable=invalid-name
         "qsub", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, stderr = p.communicate(input=substr)       #pylint: disable=unused-variable
-    print((stdout[:-1]))
+    print (stdout[:-1])
     if re.search("error", stdout):
         raise PBSError(0, "PBS Submission error.\n" + stdout + "\n" + stderr)
     else:

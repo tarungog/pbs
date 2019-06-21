@@ -5,7 +5,7 @@
 ### External ###
 import subprocess
 import os
-import io
+import StringIO
 import re
 import datetime
 import time
@@ -38,7 +38,7 @@ def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), s
                 p = subprocess.Popen(sopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
                 stdout, stderr = p.communicate()        #pylint: disable=unused-variable
 
-                sout = io.StringIO(stdout)
+                sout = StringIO.StringIO(stdout)
 
                 # Nothing to strip, as scontrol provides no headers
                 return sout.read()
@@ -51,7 +51,7 @@ def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), s
                 q = subprocess.Popen(sopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
                 stdout, stderr = q.communicate()    #pylint: disable=unused-variable
 
-                qsout = io.StringIO(stdout)
+                qsout = StringIO.StringIO(stdout)
 
                 # Get the jobids
                 jobid = []
@@ -96,7 +96,7 @@ def _squeue(jobid=None, username=getlogin(), full=False, version=getversion(), s
         q = subprocess.Popen(sopt, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)     #pylint: disable=invalid-name
         stdout, stderr = q.communicate()    #pylint: disable=unused-variable
 
-        sout = io.StringIO(stdout)
+        sout = StringIO.StringIO(stdout)
 
         # return the remaining text
         return sout.read()
@@ -112,7 +112,7 @@ def job_id(all=False, name=None):       #pylint: disable=redefined-builtin
     if all or name is not None:
         jobid = []
         stdout = _squeue()
-        sout = io.StringIO(stdout)
+        sout = StringIO.StringIO(stdout)
         for line in sout:
             if name is not None:
                 if line.split()[3] == name:
@@ -165,7 +165,7 @@ def job_status(jobid=None):
     status = dict()
 
     stdout = _squeue(jobid=jobid, full=True)
-    sout = io.StringIO(stdout)
+    sout = StringIO.StringIO(stdout)
 
 ### TODO: figure out why jobstatus is being initialized as a None vs as a dict() and then checked for content ### pylint: disable=fixme
     # jobstatus = None
@@ -277,7 +277,7 @@ def submit(substr):
     p = subprocess.Popen(   #pylint: disable=invalid-name
         "sbatch", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, stderr = p.communicate(input=substr)       #pylint: disable=unused-variable
-    print((stdout[:-1]))
+    print (stdout[:-1])
     if re.search("error", stdout):
         raise PBSError(0, "PBS Submission error.\n" + stdout + "\n" + stderr)
     else:
