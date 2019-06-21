@@ -52,7 +52,7 @@ def _qstat(jobid=None, username=getlogin(), full=False, version=getversion()):
         elif isinstance(jobid, list):
             pass
         else:
-            print "Error in pbs.misc.qstat(). type(jobid):", type(jobid)
+            print ("Error in pbs.misc.qstat(). type(jobid):", type(jobid))
             sys.exit()
         opt += jobid
 
@@ -243,7 +243,7 @@ def submit(substr):
     p = subprocess.Popen(   #pylint: disable=invalid-name
         "qsub", stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, stderr = p.communicate(input=substr)       #pylint: disable=unused-variable
-    print stdout[:-1]
+    print (stdout[:-1])
     if re.search("error", stdout):
         raise PBSError(0, "PBS Submission error.\n" + stdout + "\n" + stderr)
     else:

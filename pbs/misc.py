@@ -82,7 +82,7 @@ def seconds(walltime):
                 + float(wtime[1])*60.0
                 + float(wtime[2]))
     else:
-        print "Error in walltime format:", walltime
+        print ("Error in walltime format:", walltime)
         sys.exit()
 
 def hours(walltime):
@@ -100,7 +100,7 @@ def hours(walltime):
                 + float(wtime[1])/60.0
                 + float(wtime[2])/3600.0)
     else:
-        print "Error in walltime format:", walltime
+        print ("Error in walltime format:", walltime)
         sys.exit()
 
 def strftimedelta(seconds):     #pylint: disable=redefined-outer-name

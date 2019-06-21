@@ -26,28 +26,28 @@ elif args.kill:
         pbs.alter(jobid[-1], "-a " + pbs.exetime("10:00:00:00") )
         pbs.delete(jobid[-1])
 else:
-    
+
     # check if taskmaster already running (besides this one)
     jobid = pbs.job_id(name="taskmaster")
     tmaster_status = pbs.job_status(jobid)
     for j in jobid:
         if j != pbs.job_id():
             if tmaster_status[j]["jobstatus"] != "C":
-                print "A taskmaster is already running. JobID:", j, "  Status:",  tmaster_status[j]["jobstatus"] 
+                print ("A taskmaster is already running. JobID:", j, "  Status:",  tmaster_status[j]["jobstatus"])
                 sys.exit()
-    
+
     # continue jobs
     db = pbs.JobDB()
     db.update()
     db.continue_all()
     db.close()
-    
+
     # submit taskmaster
-    print "submit taskmaster"
+    print ("submit taskmaster")
     j = pbs.PrismsDebugJob(nodes="1", ppn="1", name="taskmaster", \
         exetime=pbs.exetime(args.delay), auto=False, message=None, \
         command="taskmaster " + ' '.join(sys.argv[1:]))
     j.submit(add=False)
-    
+
     #print "submit string:"
     #print j.qsub_string()

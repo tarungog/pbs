@@ -11,7 +11,7 @@ j = pbs.PrismsDebugJob(nodes="2", command="echo \"hello\" > test.txt")
 # other options are: PrismsJob(), NonPrismsJob(), PrismsSpecialJob() and PrismsPriorityJob()
 
 # take a look at the qsub script associated with the Job
-print j.qsub_string()
+print (j.qsub_string())
 
 # if you want to write a bash submit script file
 j.script("submit.sh")
